@@ -28,7 +28,7 @@ export const PART3: Spec[] = [
   { cue: "and were resupplied by COS", footage: "tf-jump.mp4@2*0.7", text: [{ k: "darken", say: "resupplied by COS aircraft." }] },
   { cue: "For a detachment to operate", photo: "images/p3/takuba-mgl.jpg", text: [{ k: "darken", say: "on its own | out there," }] },
   { cue: "it needs a supply chain", bg: "beige", text: [{ k: "darken", say: "a supply chain | that can actually reach it.", size: 84 }] },
-  { cue: "The 1st RPIMA trains and qualifies", photo: "images/p3/para.jpg", origin: "50% 30%", text: [{ k: "darken", say: "its own special warfare center." }] },
+  { cue: "The 1st RPIMA trains and qualifies", cards: ["images/p3/para.jpg", "images/p3/divers.jpg", "images/p3/op-cos.jpg"], text: [{ k: "darken", say: "its own special warfare center.", y: 89, size: 62 }] },
   { cue: "It also keeps support roles", bg: "paper", text: [{ k: "darken", say: "support roles in-house.", size: 110 }] },
   { cue: "The Army's public overview lists", bg: "black", cutouts: [{ src: "rpima-ops.png", x: 120, y: 160, h: 920, from: "bottom" }], text: [{ k: "tags", x: 72, y: 46, items: [{ text: "Telecommunications", say: "telecommunications," }, { text: "Medical", say: "medical," }, { text: "Administrative", say: "administrative" }] }] },
   { cue: "alongside the combat troops.", photo: "images/p3/op-2.jpg", origin: "60% 40%", zoom: [1.1, 1.22], text: [{ k: "darken", say: "the combat troops." }] },

@@ -1,1 +1,6 @@
 # Composições renderizadas no próximo push (uma por linha)
+Part1
+Part2
+Part3
+Part4
+Part5
