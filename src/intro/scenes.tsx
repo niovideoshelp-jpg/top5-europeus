@@ -534,7 +534,7 @@ export const S18 = () => {
 };
 
 /* 19 ─ 36,08 "I wanted to understand how these units" */
-export const S19 = () => <Footage src="video/tf-ruins-run.mp4" look="bw" from={1.02} to={1.12} />;
+export const S19 = () => <Footage src="video/tf-ruins-run.mp4" trimBefore={0.6} look="bw" from={1.02} to={1.12} />;
 
 /* 20 ─ 37,82 "actually work in practice." */
 export const S20 = () => {
