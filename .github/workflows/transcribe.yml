@@ -1,0 +1,41 @@
+name: Transcribe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "public/audio/part*.mp3"
+
+jobs:
+  whisper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      matrix:
+        part: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg build-essential
+
+      - name: Whisper (medium.en)
+        env:
+          WHISPER_MODEL: medium.en
+          WHISPER_LANG: en
+        run: |
+          ffmpeg -y -i public/audio/part${{ matrix.part }}.mp3 -ar 16000 -ac 1 -c:a pcm_s16le part.wav
+          node scripts/transcribe.mjs part.wav production/part${{ matrix.part }}-captions.json > /dev/null
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: captions-part${{ matrix.part }}
+          path: production/part${{ matrix.part }}-captions.json
+          retention-days: 7

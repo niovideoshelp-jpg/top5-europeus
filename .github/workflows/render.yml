@@ -8,24 +8,47 @@ on:
       - "public/**"
       - "package.json"
       - "package-lock.json"
+      - "production/render-targets.txt"
       - ".github/workflows/render.yml"
   workflow_dispatch:
     inputs:
-      composition:
-        description: "ID da composição"
-        default: "Intro"
-        required: true
+      compositions:
+        description: "IDs separados por espaço (vazio = usar production/render-targets.txt)"
+        default: ""
+        required: false
 
 concurrency:
   group: render-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  render:
+  plan:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+      any: ${{ steps.m.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: |
+          LIST="${{ github.event.inputs.compositions }}"
+          [ -z "$LIST" ] && LIST=$(grep -v '^#' production/render-targets.txt | xargs)
+          JSON=$(printf '%s\n' $LIST | jq -R . | jq -cs .)
+          echo "matrix=$JSON" >> "$GITHUB_OUTPUT"
+          [ "$JSON" = "[]" ] && echo "any=false" >> "$GITHUB_OUTPUT" || echo "any=true" >> "$GITHUB_OUTPUT"
+          echo "Renderizar: $LIST"
+
+  render:
+    needs: plan
+    if: needs.plan.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        composition: ${{ fromJson(needs.plan.outputs.matrix) }}
     env:
-      COMPOSITION: ${{ github.event.inputs.composition || 'Intro' }}
+      COMPOSITION: ${{ matrix.composition }}
     steps:
       - uses: actions/checkout@v4
 

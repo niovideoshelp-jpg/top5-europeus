@@ -16,3 +16,5 @@ out/
 production/scout/
 production/raw/
 production/transcribe.log
+
+.whisper-part*.wav
