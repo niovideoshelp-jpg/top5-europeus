@@ -136,7 +136,7 @@ export const S03 = () => {
   const l = at(2.4);
   return (
     <AbsoluteFill>
-      <Footage src="video/tf-cqb.mp4" trimBefore={0.2} look="bw" punch />
+      <Footage src="video/tf-cqb.mp4" trimBefore={0.8} look="bw" punch />
       <Shade />
       <LetterDrop text="conflicts" color={WHITE} size={110} y={80} start={l(2.9)} duration={0.4} />
     </AbsoluteFill>
@@ -229,7 +229,7 @@ export const S07 = () => {
   const l = at(9.63);
   return (
     <AbsoluteFill>
-      <Footage src="video/tf-room-entry.mp4" trimBefore={1.5} look="bw" punch />
+      <Footage src="video/tf-room-entry.mp4" trimBefore={1.7} look="bw" punch />
       <Shade />
       <LetterDrop text="into action" color={WHITE} size={110} y={80} start={l(10.56)} duration={0.4} />
     </AbsoluteFill>
@@ -303,7 +303,7 @@ export const S11 = () => {
   const l = at(15.92);
   return (
     <AbsoluteFill>
-      <Footage src="video/tf-nvg-helmets.mp4" trimBefore={0.3} look="bw" from={1.04} to={1.16} />
+      <Footage src="video/tf-nvg-helmets.mp4" trimBefore={1.2} playbackRate={0.8} look="bw" from={1.04} to={1.16} />
       <Shade strength={0.45} />
       <LetterDrop text="today," color={WHITE} size={120} y={78} start={l(16.43)} duration={0.35} />
     </AbsoluteFill>
@@ -541,7 +541,7 @@ export const S20 = () => {
   const l = at(37.82);
   return (
     <AbsoluteFill>
-      <Footage src="video/tf-boats.mp4" look="faded" from={1.04} to={1.14} />
+      <Footage src="video/tf-boats.mp4" trimBefore={0.8} look="faded" from={1.04} to={1.14} />
       <Shade />
       <LetterDrop text="in practice." color={WHITE} size={110} y={80} start={l(38.92)} duration={0.45} />
     </AbsoluteFill>
