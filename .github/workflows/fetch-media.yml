@@ -1,0 +1,37 @@
+name: Fetch media
+
+# Baixa do Wikimedia Commons as imagens da lista que ainda não estão no repositório
+# (útil quando o servidor de imagens limita o IP local).
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Baixar o que falta
+        run: |
+          mkdir -p fetched
+          : > production/media-credits.tsv
+          while IFS='|' read -r title dest; do
+            [ -z "$title" ] && continue
+            [ -s "public/$dest" ] && continue
+            node scripts/commons.mjs get "$title" "$dest" 1920 || echo "FALHOU $dest"
+            mkdir -p "fetched/$(dirname "$dest")"
+            [ -s "public/$dest" ] && cp "public/$dest" "fetched/$dest"
+            sleep 2
+          done < production/download-list.txt
+          cp production/media-credits.tsv fetched/credits.tsv
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fetched-media
+          path: fetched/
+          retention-days: 3

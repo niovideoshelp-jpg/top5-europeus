@@ -66,12 +66,22 @@ if (cmd === "search") {
   }
 } else if (cmd === "get") {
   const [title, dest, width = "1920"] = args;
-  const [page] = await info(title, Number(width));
-  const ii = page?.imageinfo?.[0];
+  let [page] = await info(title, Number(width));
+  let ii = page?.imageinfo?.[0];
+  // Original menor que a largura pedida: pede miniatura 1 px menor (servidor de miniaturas, menos limitado).
+  if (ii && !ii.mime?.startsWith("video") && ii.width <= Number(width) && ii.width > 2) {
+    [page] = await info(title, ii.width - 1);
+    ii = page?.imageinfo?.[0];
+  }
   if (!ii) throw new Error(`não encontrado: ${title}`);
   const isVideo = ii.mime?.startsWith("video");
   const url = isVideo ? ii.url : (ii.thumburl ?? ii.url);
-  const res = await fetch(url, { headers: UA });
+  let res;
+  for (let i = 0; i < 6; i++) {
+    res = await fetch(url, { headers: UA });
+    if (res.status !== 429) break;
+    await new Promise((ok) => setTimeout(ok, 20000 * (i + 1)));
+  }
   if (!res.ok) throw new Error(`${res.status} ${url}`);
   const out = path.join("public", dest);
   fs.mkdirSync(path.dirname(out), { recursive: true });

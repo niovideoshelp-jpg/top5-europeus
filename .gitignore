@@ -18,3 +18,5 @@ production/raw/
 production/transcribe.log
 
 .whisper-part*.wav
+production/transcribe*.log
+production/cloud-captions/

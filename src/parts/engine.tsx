@@ -24,7 +24,7 @@ export type TextSpec =
   | { k: "type"; say: string; text?: string; y?: number; size?: number }
   | { k: "spread"; say: string; y?: number; size?: number; gap?: number }
   | { k: "torn"; say: string; text?: string; x?: number; y?: number; size?: number; rotate?: number }
-  | { k: "tags"; items: { text: string; say?: string }[]; x?: number; y?: number; size?: number }
+  | { k: "tags"; items: { text: string; say?: string }[]; x?: number; y?: number; size?: number; color?: string }
   | { k: "counter"; say: string; values: string[]; dur?: number; y?: number; size?: number }
   | { k: "stamp"; say: string; text: string; x?: number; y?: number; size?: number; rotate?: number }
   | { k: "strike"; say: string; y?: number }
@@ -56,7 +56,7 @@ export type Spec = {
   cutouts?: CutoutSpec[];
   cards?: string[];
   flags?: string[];
-  map?: { sites: [number, number][]; arcs?: boolean; origin?: [number, number]; zoom?: [number, number] };
+  map?: { sites: [number, number][]; arcs?: boolean; origin?: [number, number]; zoom?: [number, number]; focus?: [number, number]; hl?: string[] };
   rank?: { n: number; name: string; country: string; flag: string; photo?: string };
   silhouettes?: string[];
   earth?: boolean;
@@ -119,7 +119,7 @@ const TextLayer: React.FC<{ spec: TextSpec; s: Resolved }> = ({ spec, s }) => {
         const ws = phraseWords(s.words, p, cursor);
         cursor = ws[ws.length - 1].start;
         const shown = p.split(/\s+/);
-        return ws.map((w, i) => ({ text: shown[i] + (i === ws.length - 1 ? displayText("", [w]) : ""), start: l(w.start) }));
+        return ws.map((w, i) => ({ text: i === ws.length - 1 ? displayText(shown[i], [w]) : shown[i], start: l(w.start) }));
       });
       return (
         <WordDarken
@@ -184,7 +184,7 @@ const TextLayer: React.FC<{ spec: TextSpec; s: Resolved }> = ({ spec, s }) => {
         }
         return { text: it.text, at: 0.25 + i * 0.25 };
       });
-      return <UiTags tags={tags} x={spec.x ?? 76} y={spec.y ?? 54} size={spec.size ?? 40} />;
+      return <UiTags tags={tags} x={spec.x ?? 76} y={spec.y ?? 54} size={spec.size ?? 40} color={spec.color} />;
     }
     case "counter": {
       const ws = get(spec.say);
@@ -216,9 +216,10 @@ const TextLayer: React.FC<{ spec: TextSpec; s: Resolved }> = ({ spec, s }) => {
 /* ───────────── visuais ───────────── */
 
 const mediaArgs = (v: string) => {
-  const [file, rest] = v.split("@");
-  const [trim, rate] = (rest ?? "").split("*");
-  return { file, trim: trim ? Number(trim) : 0, rate: rate ? Number(rate) : 1 };
+  // "clipe.mp4@trim*velocidade"
+  const m = v.match(/^([^@*]+)(?:@([\d.]+))?(?:\*([\d.]+))?$/);
+  if (!m) throw new Error(`Mídia inválida: ${v}`);
+  return { file: m[1], trim: m[2] ? Number(m[2]) : 0, rate: m[3] ? Number(m[3]) : 1 };
 };
 
 const Flags: React.FC<{ flags: string[]; dur: number }> = ({ flags, dur }) => {
@@ -322,11 +323,13 @@ const RankCard: React.FC<{ rank: NonNullable<Spec["rank"]>; dur: number }> = ({ 
       </div>
       <div className="bar" style={{ position: "absolute", left: 640, top: 590, width: 1100, height: 8, background: C.red, transformOrigin: "0% 50%" }} />
       <LetterDrop text={rank.name} face="sans" size={rank.name.length > 14 ? 88 : 120} color={WHITE} x={62} y={45} start={0.25} duration={0.6} />
-      <div className="ctry" style={{ position: "absolute", left: 660, top: 640, fontFamily: serif, fontStyle: "italic", fontSize: 72, color: WHITE, textShadow: rgbSplit(1.4), opacity: 0 }}>
-        {rank.country}
-      </div>
-      <div className="fl" style={{ position: "absolute", left: 1520, top: 640, width: 210, height: 140, padding: 7, background: "#ece9e2", boxShadow: "0 10px 20px rgba(0,0,0,0.5)" }}>
-        <Img src={staticFile(`flags/${rank.flag}.png`)} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.8)" }} />
+      <div style={{ position: "absolute", left: 660, top: 630, display: "flex", alignItems: "center", gap: 36 }}>
+        <div className="ctry" style={{ fontFamily: serif, fontStyle: "italic", fontSize: rank.country.length > 24 ? 56 : 72, color: WHITE, textShadow: rgbSplit(1.4), opacity: 0, whiteSpace: "nowrap" }}>
+          {rank.country}
+        </div>
+        <div className="fl" style={{ width: 180, height: 120, padding: 6, background: "#ece9e2", boxShadow: "0 10px 20px rgba(0,0,0,0.5)", flex: "none" }}>
+          <Img src={staticFile(`flags/${rank.flag}.png`)} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.8)" }} />
+        </div>
       </div>
     </AbsoluteFill>
   );
@@ -395,7 +398,7 @@ export const SpecScene: React.FC<{ s: Resolved }> = ({ s }) => {
     const m = mediaArgs(s.footage);
     base = (
       <>
-        <Footage src={`video/${m.file}`} trimBefore={m.trim} playbackRate={m.rate} look={s.look ?? "bw"} punch={s.punch} from={zoom[0]} to={zoom[1]} origin={s.origin} />
+        <Footage src={`video/${m.file}`} trimBefore={m.trim} playbackRate={m.rate} loop look={s.look ?? "bw"} punch={s.punch} from={zoom[0]} to={zoom[1]} origin={s.origin} />
         {!s.noShade && s.text?.length ? <Shade /> : null}
       </>
     );
@@ -416,7 +419,7 @@ export const SpecScene: React.FC<{ s: Resolved }> = ({ s }) => {
 
   const layers = (
     <>
-      {s.map && <WorldMap sites={s.map.sites.map(([lon, lat], i) => ({ lon, lat, at: 0.15 + i * Math.min(0.2, (dur * 0.6) / s.map!.sites.length) }))} arcs={s.map.arcs} origin={s.map.origin} zoomFrom={s.map.zoom?.[0] ?? 1} zoomTo={s.map.zoom?.[1] ?? 1.1} duration={dur} />}
+      {s.map && <WorldMap sites={s.map.sites.map(([lon, lat], i) => ({ lon, lat, at: 0.15 + i * Math.min(0.2, (dur * 0.6) / s.map!.sites.length) }))} arcs={s.map.arcs} origin={s.map.origin} focus={s.map.focus} highlight={s.map.hl} zoomFrom={s.map.zoom?.[0] ?? 1} zoomTo={s.map.zoom?.[1] ?? 1.1} duration={dur} />}
       {s.flags && <Flags flags={s.flags} dur={dur} />}
       {s.cards && <Cards cards={s.cards} />}
       {s.silhouettes && <Silhouettes srcs={s.silhouettes} />}
@@ -432,7 +435,7 @@ export const SpecScene: React.FC<{ s: Resolved }> = ({ s }) => {
       {s.cutouts?.map((c, i) => (
         <Enter key={i} at={c.delay ?? 0} from={cutoutFrom(c)} duration={0.4} float={c.float}>
           <Cutout
-            src={`cutouts/${c.src}`}
+            src={c.src.includes("/") ? c.src : `cutouts/${c.src}`}
             look={c.look ?? "faded"}
             style={{ left: c.x, top: c.y, width: c.w, height: c.h, ...(c.black ? { filter: `brightness(0) ${rgbSplitFilter(2)}` } : {}) }}
           />

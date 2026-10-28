@@ -109,6 +109,7 @@ export const Footage: React.FC<{
   origin?: string;
   halftone?: number;
   playbackRate?: number;
+  loop?: boolean;
 }> = ({
   src,
   trimBefore = 0,
@@ -119,6 +120,7 @@ export const Footage: React.FC<{
   origin = "50% 50%",
   halftone = 0.25,
   playbackRate = 1,
+  loop = false,
 }) => {
   const { fps } = useVideoConfig();
   const { scale, blur } = usePush(from, to, !!punch);
@@ -135,6 +137,7 @@ export const Footage: React.FC<{
           src={staticFile(src)}
           trimBefore={Math.round(trimBefore * fps)}
           playbackRate={playbackRate}
+          loop={loop}
           muted
           objectFit="cover"
           style={{ width: "100%", height: "100%" }}

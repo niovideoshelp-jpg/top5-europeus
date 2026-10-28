@@ -1,0 +1,45 @@
+p1-kabul | Kabul airport evacuation August 2021
+p1-kabul-de | Bundeswehr Evakuierung Kabul A400M
+p1-kabulv | Hamid Karzai International Airport evacuation | video
+p1-ksk | Kommando Spezialkräfte KSK Soldaten
+p1-calw | Graf-Zeppelin-Kaserne Calw
+p1-g95 | HK416 A7 G95 Bundeswehr
+p1-g29 | Haenel RS9 G29 Scharfschützengewehr
+p1-h145m | H145M LUH SOF Luftwaffe
+p1-bwafg | Bundeswehr Afghanistan ISAF patrol
+p1-kosovo | KFOR Bundeswehr Kosovo 1999
+p2-grom | JW GROM Polish special forces
+p2-grom-iraq | Polish GROM Iraq 2003 Umm Qasr
+p2-minaal | Mina al-Bakr oil terminal
+p2-anzac | HMAS Anzac FFH 150
+p2-seals | Navy SEALs boarding oil platform
+p2-slavonia | Eastern Slavonia UNTAES
+p2-polafg | Polish special forces Afghanistan Ghazni
+p2-s70i | S-70i Black Hawk Polish special forces
+p2-hk416 | HK416 rifle
+p3-rpima | 1er régiment de parachutistes d'infanterie de marine
+p3-bayonne | Citadelle de Bayonne
+p3-frsas | French SAS paratroopers 1944
+p3-cos | Commandement des opérations spéciales
+p3-abidjan | Opération Licorne Abidjan 2004
+p3-sahel | Opération Barkhane forces spéciales
+p3-nh90 | NH90 Caïman armée de terre
+p3-4rhfs | 4e régiment d'hélicoptères des forces spéciales
+p3-hk416f | HK416F
+p4-sbsww2 | Special Boat Squadron Second World War
+p4-canoe | Cockleshell Heroes canoe Royal Marines
+p4-falk | Falklands War 1982 San Carlos
+p4-faw | Al-Faw peninsula 2003 Royal Marines
+p4-sdv | SEAL Delivery Vehicle Mark 8
+p4-astute | Astute-class submarine HMS
+p4-rmdiver | Royal Marines diver
+p5-embassy | Iranian Embassy siege 1980 Princes Gate
+p5-sasafrica | Special Air Service North Africa 1942
+p5-malaya | Special Air Service Malaya jungle
+p5-brecon | Pen y Fan Brecon Beacons
+p5-hipower | Browning Hi-Power pistol
+p5-mp5 | Heckler Koch MP5
+p5-sfsg | Special Forces Support Group
+p5-barras | Sierra Leone 2000 British paratroopers
+p5-oman | Dhofar Rebellion SAS
+p5-chinook | Chinook RAF special forces

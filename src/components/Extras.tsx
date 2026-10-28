@@ -20,15 +20,25 @@ export const WorldMap: React.FC<{
   zoomTo?: number;
   duration?: number;
   origin?: [number, number];
-}> = ({ sites, arcs, zoomFrom = 1.05, zoomTo = 1.25, duration = 2, origin = [5, 50] }) => {
+  focus?: [number, number];
+  highlight?: string[];
+}> = ({ sites, arcs, zoomFrom = 1.05, zoomTo = 1.25, duration = 2, origin = [5, 50], focus, highlight = [] }) => {
   const [ox, oy] = project(...origin);
+  const k = focus ? 1 / Math.max(1, zoomTo) : 1;
   const ref = useGsap((tl, q) => {
-    tl.fromTo(
-      q(".map"),
-      { scale: zoomFrom },
-      { scale: zoomTo, duration, ease: "sine.inOut", transformOrigin: `${(ox / 1920) * 100}% ${(oy / 1080) * 100}%` },
-      0,
-    );
+    if (focus) {
+      // Aproxima e centraliza o ponto de foco na tela.
+      const [fx, fy] = project(...focus);
+      const at = (s: number) => ({ scale: s, x: 960 - fx * s, y: 540 - fy * s });
+      tl.fromTo(q(".map"), { ...at(zoomFrom), transformOrigin: "0px 0px" }, { ...at(zoomTo), duration, ease: "sine.inOut" }, 0);
+    } else {
+      tl.fromTo(
+        q(".map"),
+        { scale: zoomFrom },
+        { scale: zoomTo, duration, ease: "sine.inOut", transformOrigin: `${(ox / 1920) * 100}% ${(oy / 1080) * 100}%` },
+        0,
+      );
+    }
     sites.forEach((s, i) => {
       tl.fromTo(q(`.dot-${i}`), { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.18, ease: "back.out(3)" }, s.at);
       tl.fromTo(
@@ -54,10 +64,11 @@ export const WorldMap: React.FC<{
           <path
             key={c.iso + c.d.length}
             d={c.d}
-            fill={c.europe ? "#a9a69f" : "#b7b4ad"}
+            fill={highlight.includes(c.iso) ? "#9b3a30" : c.europe ? "#a9a69f" : "#b7b4ad"}
             stroke="#3a3936"
             strokeWidth={0.9}
             strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
           />
         ))}
         {arcs && <circle cx={ox} cy={oy} r={7} fill={C.ink} />}
@@ -73,7 +84,7 @@ export const WorldMap: React.FC<{
                   d={`M${ox},${oy} Q${mx},${my} ${x},${y}`}
                   fill="none"
                   stroke={C.red}
-                  strokeWidth={3}
+                  strokeWidth={3 * k}
                   strokeLinecap="round"
                   pathLength={1}
                   strokeDasharray="1 1"
@@ -84,20 +95,20 @@ export const WorldMap: React.FC<{
                 className={`pulse-${i}`}
                 cx={x}
                 cy={y}
-                r={12}
+                r={12 * k}
                 fill="none"
-                stroke={C.red}
-                strokeWidth={2.5}
+                stroke={highlight.length ? C.ink : C.red}
+                strokeWidth={2.5 * k}
                 opacity={0}
               />
               <circle
                 className={`dot-${i}`}
                 cx={x}
                 cy={y}
-                r={11}
-                fill={C.red}
-                stroke="#2a0a08"
-                strokeWidth={2}
+                r={11 * k}
+                fill={highlight.length ? C.ink : C.red}
+                stroke={highlight.length ? "#f3f1ec" : "#2a0a08"}
+                strokeWidth={(highlight.length ? 3 : 2) * k}
               />
             </g>
           );
