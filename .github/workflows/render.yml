@@ -39,15 +39,23 @@ jobs:
       - name: Dependências do Chrome headless
         run: |
           sudo apt-get update
-          sudo apt-get install -y libnss3 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2t64 fonts-noto-color-emoji
+          sudo apt-get install -y libnss3 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2t64 fonts-noto-color-emoji ffmpeg
 
       - run: npx remotion browser ensure
 
       - name: Render 1080p
         run: |
           mkdir -p out
-          npx remotion render src/index.ts "$COMPOSITION" "out/${COMPOSITION}_1080p.mp4" \
+          npx remotion render src/index.ts "$COMPOSITION" "out/raw.mp4" \
             --codec=h264 --crf=18 --audio-bitrate=320k --concurrency=100% --log=info
+
+      - name: Master de áudio (-14 LUFS)
+        run: |
+          ffmpeg -y -i out/raw.mp4 -c:v copy \
+            -af "acompressor=threshold=0.08:ratio=3:attack=5:release=120:makeup=2,loudnorm=I=-14:TP=-1.5:LRA=9,aresample=48000" \
+            -c:a aac -b:a 320k "out/${COMPOSITION}_1080p.mp4"
+          rm out/raw.mp4
+          ffmpeg -hide_banner -i "out/${COMPOSITION}_1080p.mp4" -af ebur128=peak=true -f null - 2>&1 | tail -12
 
       - name: Prévia 720p
         run: |

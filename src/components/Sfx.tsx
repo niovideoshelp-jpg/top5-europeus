@@ -32,6 +32,10 @@ export type SfxEvent = {
   length?: number;
 };
 
+// Volume geral dos efeitos em relação à narração (as trilhas de fundo não entram).
+const SFX_MASTER = 0.55;
+const BEDS: SfxName[] = ["drone-bed", "projector"];
+
 // Cada evento vira um <Audio> posicionado no tempo absoluto do vídeo (segundos).
 export const SfxTrack: React.FC<{ events: SfxEvent[] }> = ({ events }) => (
   <>
@@ -44,7 +48,7 @@ export const SfxTrack: React.FC<{ events: SfxEvent[] }> = ({ events }) => (
       >
         <Audio
           src={staticFile(`sfx/${e.name}.mp3`)}
-          volume={e.gain ?? 0.5}
+          volume={(e.gain ?? 0.5) * (BEDS.includes(e.name) ? 1 : SFX_MASTER)}
           trimBefore={e.trim ? Math.round(e.trim * FPS) : undefined}
         />
       </Sequence>
