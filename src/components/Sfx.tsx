@@ -33,7 +33,7 @@ export type SfxEvent = {
 };
 
 // Volume geral dos efeitos em relação à narração (as trilhas de fundo não entram).
-const SFX_MASTER = 0.55;
+const SFX_MASTER = 0.35;
 const BEDS: SfxName[] = ["drone-bed", "projector"];
 
 // Cada evento vira um <Audio> posicionado no tempo absoluto do vídeo (segundos).
